@@ -12,5 +12,26 @@
 */
 
 Route::get('/', function () {
-    return view('welcome');
+    return view('errors.503');
 });
+
+Route::get('/', function () {
+    return view('welcome')->with('name','KangJinYoung'); // 그닥인 방법
+});
+
+Route::get('/',function (){
+    return view('welcome',[
+        'name' => 'KangJinYoung',
+        'greeting' => 'Nice to meet you'
+    ]);
+}); // 실전방식
+
+Route::get('/blade',function (){
+    $items = ['apple','bae','watermelon'];
+    return view('blade',[
+        'name' => 'KangJinYoung',
+        'greeting' => 'Nice to meet you',
+        'items' => $items
+    ]);
+});
+
