@@ -40,3 +40,11 @@ Route::resource('articles','ArticlesController');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
+
+DB::listen(function ($query){
+    dump($query);
+});
+
+Route::get('/info',function (){
+    return phpinfo();
+});

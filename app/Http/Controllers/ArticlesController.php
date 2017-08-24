@@ -14,6 +14,9 @@ class ArticlesController extends Controller
     public function index()
     {
         //
+        $articles = \App\Article::get();
+
+        return view('articles.index', compact('articles'));
     }
 
     /**
