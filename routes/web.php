@@ -40,10 +40,15 @@ Route::resource('articles','ArticlesController');
 Auth::routes();
 
 Route::get('/home', 'HomeController@index')->name('home');
-
+/*
 DB::listen(function ($query){
     dump($query);
-});
+});*/
+/*
+Event::listen('article.created',function ($article){
+    dump('이벤트를 수신하였습니다. 상태는 다음과 같습니다.');
+    dump($article->toArray());
+});*/
 
 Route::get('/info',function (){
     return phpinfo();

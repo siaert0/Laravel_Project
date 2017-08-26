@@ -14,8 +14,7 @@ class ArticlesController extends Controller
     public function index()
     {
         //
-        $articles = \App\Article::get();
-
+        $articles = \App\Article::latest()->paginate(4);
         return view('articles.index', compact('articles'));
     }
 
@@ -27,6 +26,7 @@ class ArticlesController extends Controller
     public function create()
     {
         //
+        return view('articles.create');
     }
 
     /**
@@ -35,9 +35,19 @@ class ArticlesController extends Controller
      * @param  \Illuminate\Http\Request  $request
      * @return \Illuminate\Http\Response
      */
-    public function store(Request $request)
+    public function store(\App\Http\Requests\ArticlesRequest $request)
     {
         //
+        $article = \App\User::find(1)->articles()->create($request->all());
+
+        if(! $article){
+            return back()->with('flash_message', '글이 저장되지 않았습니다.');
+        }
+
+        dump('이벤트를 던집니다.');
+        Event(new \App\Events\ArticleCreated($article));
+        //return redirect(route('articles.index'))->with('flash_message','글이 저장되었습니다.');
+        dump('이벤트를 던졌습니다.');
     }
 
     /**
@@ -49,6 +59,9 @@ class ArticlesController extends Controller
     public function show($id)
     {
         //
+        $article = \App\Article::findOrFail($id);
+        dd($article);
+        return $article->toArray();
     }
 
     /**
