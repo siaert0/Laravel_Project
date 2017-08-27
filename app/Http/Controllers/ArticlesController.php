@@ -60,7 +60,7 @@ class ArticlesController extends Controller
     {
         //
         $article = \App\Article::findOrFail($id);
-        dd($article);
+        dedug($article);
         return $article->toArray();
     }
 
