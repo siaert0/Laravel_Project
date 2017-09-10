@@ -16,6 +16,8 @@ class ArticlesRequest extends FormRequest
         return true;
     }
 
+    protected $dontFlash = ['files'];
+
     /**
      * Get the validation rules that apply to the request.
      *
@@ -26,6 +28,9 @@ class ArticlesRequest extends FormRequest
         return [
             'title' => ['required'],
             'content' => ['required','min:10'],
+            'tags' => ['required','array'],
+            'files' => ['array'],
+            'files.*' => ['mimes:jpg,png,zip,tar', 'max:30000'],
         ];
     }
 

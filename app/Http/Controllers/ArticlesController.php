@@ -7,14 +7,25 @@ use Illuminate\Http\Request;
 class ArticlesController extends Controller
 {
     /**
+     * ArticlesController constructor.
+     */
+    public function __construct()
+    {
+        $this->middleware('auth',['except'=>['index','show']]);
+    }
+
+
+    /**
      * Display a listing of the resource.
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index($slug = null)
     {
         //
-        $articles = \App\Article::latest()->paginate(4);
+        $query = $slug ? \App\Tag::whereSlug($slug)->firstOrFail()->articles()
+            : new \App\Article;
+        $articles = $query->latest()->paginate(3);
         return view('articles.index', compact('articles'));
     }
 
@@ -26,7 +37,8 @@ class ArticlesController extends Controller
     public function create()
     {
         //
-        return view('articles.create');
+        $article = new \App\Article;
+        return view('articles.create', compact('article'));
     }
 
     /**
@@ -37,17 +49,32 @@ class ArticlesController extends Controller
      */
     public function store(\App\Http\Requests\ArticlesRequest $request)
     {
-        //
-        $article = \App\User::find(1)->articles()->create($request->all());
+
+        $article = $request->user()->articles()->create($request->all());
 
         if(! $article){
             return back()->with('flash_message', '글이 저장되지 않았습니다.');
         }
+        //
 
-        dump('이벤트를 던집니다.');
-        Event(new \App\Events\ArticleCreated($article));
-        //return redirect(route('articles.index'))->with('flash_message','글이 저장되었습니다.');
-        dump('이벤트를 던졌습니다.');
+        if($request->hasFile('files')){
+            $files = $request->file('files');
+
+            foreach ($files as $file){
+                $fileName = str_random().filter_var($file->getClientOriginalName(),FILTER_SANITIZE_URL);
+                $article->attachments()->create([
+                    'filename' => $fileName,
+                    'bytes' => $file->getSize(),
+                    'mime' => $file->getClientMimeType(),
+                ]);
+                $file->move(attachments_path(),$fileName);
+            }
+
+
+            $article->tags()->sync($request->input('tags'));
+             Event(new \App\Events\ArticleCreated($article));
+             return redirect(route('articles.index'))->with('flash_message','글이 저장되었습니다.');
+        }
     }
 
     /**
@@ -56,13 +83,12 @@ class ArticlesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show($id)
+    public function show(\App\Article $article)
     {
         //
-        $article = \App\Article::findOrFail($id);
-        dedug($article);
-        return $article->toArray();
+        return view('articles.show', compact('article'));
     }
+
 
     /**
      * Show the form for editing the specified resource.
@@ -70,9 +96,11 @@ class ArticlesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function edit(\App\Article $article)
     {
         //
+        $this->authorize('update',$article);
+        return view('articles.edit', compact('article'));
     }
 
     /**
@@ -82,9 +110,15 @@ class ArticlesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, $id)
+    public function update(\App\Http\Requests\ArticlesRequest $request, \App\Article $article)
     {
         //
+        $article->update($request->all());
+        $article->tags()->sync($request->input('tags'));
+        flash()->success('수정된 내용을 저장했습니다.');
+
+        return redirect(route('articles.show',$article->id)); // compact는 전달개념이고
+                                                                    // url의 paramiter 값이다.
     }
 
     /**
@@ -93,8 +127,11 @@ class ArticlesController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function destroy($id)
+    public function destroy(\App\Article $article)
     {
         //
+        $this->authorize('delete',$article);
+        $article->delete();
+        return response()->json([],204);
     }
 }

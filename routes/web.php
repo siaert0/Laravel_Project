@@ -11,45 +11,103 @@
 |
 */
 
-Route::get('/', function () {
-    return view('errors.503');
-});
 
-Route::get('/', function () {
-    return view('welcome')->with('name','KangJinYoung'); // 그닥인 방법
-});
 
-Route::get('/',function (){
-    return view('welcome',[
-        'name' => 'KangJinYoung',
-        'greeting' => 'Nice to meet you'
-    ]);
-}); // 실전방식
-
-Route::get('/blade',function (){
-    $items = ['apple','bae','watermelon'];
-    return view('blade',[
-        'name' => 'KangJinYoung',
-        'greeting' => 'Nice to meet you',
-        'items' => $items
-    ]);
-});
-
-Route::resource('articles','ArticlesController');
-
-Auth::routes();
-
-Route::get('/home', 'HomeController@index')->name('home');
+Route::get('/', 'HomeController@index')->name('home');
 /*
 DB::listen(function ($query){
     dump($query);
-});*/
-/*
-Event::listen('article.created',function ($article){
-    dump('이벤트를 수신하였습니다. 상태는 다음과 같습니다.');
-    dump($article->toArray());
 });*/
 
 Route::get('/info',function (){
     return phpinfo();
 });
+
+
+Route::get('/mail',function (){
+    $article = \App\Article::with('user')->find(1);
+    return Mail::send(
+        'emails.articles.created',
+        compact('article'),
+        function ($message) use ($article){
+            $message -> to('siaer00@naver.com');
+            $message -> subject('메일 전송 테스트');
+        }
+    );
+});
+
+Route::resource('articles','ArticlesController');
+
+////////////////////////////////////////////////////////////////////////////////
+
+
+/* 사용자 가입 */
+
+Route::get('auth/register', [
+    'as' => 'users.create',
+    'uses' => 'UsersController@create'
+]);
+
+Route::post('auth/register',[
+    'as' => 'users.store',
+    'uses' => 'UsersController@store'
+]);
+
+Route::get('auth/confirm/{code}',[
+    'as' => 'users.confirm',
+    'uses' => 'UsersController@confirm'
+])->where('code','[\pL-\pN]{60}');
+
+/* 사용자 인증 */
+
+Route::get('auth/login',[
+    'as' => 'sessions.create',
+    'uses' => 'SessionsController@create'
+]);
+
+Route::post('auth/login',[
+    'as' => 'sessions.store',
+    'uses' => 'SessionsController@store'
+]);
+
+Route::get('auth/logout',[
+    'as' => 'sessions.destroy',
+    'uses' => 'SessionsController@destroy'
+]);
+
+/* 비밀번호 초기화 */
+
+Route::get('auth/remind',[
+    'as' => 'remind.create',
+    'uses' => 'PasswordsController@getRemind'
+]);
+
+Route::post('auth/remind',[
+   'as' => 'remind.store',
+   'uses' => 'PasswordsController@postRemind'
+]);
+
+Route::get('auth/reset/{token}',[
+    'as' => 'reset.create',
+    'uses' => 'PasswordsController@getReset'
+])->where('token','[\pL-\pN]{64}');
+
+Route::post('auth/reset',[
+    'as' => 'reset.store',
+    'uses' => 'PasswordsController@postReset'
+]);
+
+/* Social Login*/
+
+Route::get('social/{provider}',[
+    'as' => 'social.login',
+    'uses' => 'SocialController@execute',
+]);
+
+
+/* 태그 */
+
+Route::get('tags/{slug}/articles',[
+    'as' => 'tags.articles.index',
+    'uses' => 'ArticlesController@index',
+]);
