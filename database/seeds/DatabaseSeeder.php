@@ -16,6 +16,12 @@ class DatabaseSeeder extends Seeder
             DB::statement('set foreign_key_checks=0');
         }
 
+        App\Attachment::truncate();
+        if(! File::isDirectory(attachments_path())){
+            File::makeDirectory(attachments_path(), 775, true);
+        }
+        File::cleanDirectory(attachments_path());
+
         App\User::truncate();
         $this->call(UsersTableSeeder::class);
 
@@ -53,6 +59,22 @@ class DatabaseSeeder extends Seeder
             DB::statement('set foreign_key_checks=1');
         }
 
+        $articles->each(function ($article) {
+            $article->comments()->save(factory(App\Comment::class)->make());
+            $article->comments()->save(factory(App\Comment::class)->make(
+            ));
+        });
 
+        $articles->each(function ($article) use ($faker){
+            $commentIds = App\Comment::pluck('id')->toArray();
+            foreach(range(1,5) as $index) {
+                $article->comments()->save(
+                    factory(App\Comment::class)->make([
+                        'parent_id' => $faker->randomElement($commentIds),
+                    ])
+                );
+            }
+        });
+        $this->command->info('Seeded: comments table');
     }
 }

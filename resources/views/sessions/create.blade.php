@@ -31,12 +31,12 @@
             <span class="span-or">or</span>
         </div>
         <div class="form-group {{ $errors->has('email') ? 'has-error' : '' }}">
-            <input type="email" name="email" class="form-control" placeholder="{{ trans('auth.form.email') }}" value="{{ old('email') }}" autofocus/>
+            <input type="email" name="email" class="form-control" placeholder="E-mail을 입력해 주세요." value="{{ old('email') }}" autofocus/>
             {!! $errors->first('email', '<span class="form-error">:message</span>') !!}
         </div>
 
         <div class="form-group {{ $errors->has('password') ? 'has-error' : '' }}">
-            <input type="password" name="password" class="form-control" placeholder="{{ trans('auth.form.password') }}">
+            <input type="password" name="password" class="form-control" placeholder="비밀번호를 입력해 주세요.">
             {!! $errors->first('password', '<span class="form-error">:message</span>')!!}
         </div>
 

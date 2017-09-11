@@ -1,6 +1,6 @@
-<p class="lead"><i class="fa phpdebugbar-fa-tags"></i> 태그</p>
+<p class="lead">태그</p>
 
-<ul class="list-unstyled">
+<ul class="list">
     @foreach($allTags as $tag)
         <li {!! str_contains(request()->path(), $tag->slug) ? 'class="active"' : '' !!}>
             <a href="{{ route('tags.articles.index', $tag->slug) }}">

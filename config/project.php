@@ -5,10 +5,10 @@
         'description' => '',
         'tags' => [
             'laravel' => '라라벨',
-            'lumen' => '루멘',
-            'general' => '자유의견',
-            'server' => '서버',
+            'blade' => '블레이드',
+            'backend' => '백엔드',
             'tip' => '팁',
+            'db' => '데이타베이스',
         ],
     ];
     

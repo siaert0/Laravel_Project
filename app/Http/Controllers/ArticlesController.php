@@ -23,7 +23,8 @@ class ArticlesController extends Controller
     public function index($slug = null)
     {
         //
-        $query = $slug ? \App\Tag::whereSlug($slug)->firstOrFail()->articles()
+        $query = $slug
+            ? \App\Tag::whereSlug($slug)->firstOrFail()->articles()
             : new \App\Article;
         $articles = $query->latest()->paginate(3);
         return view('articles.index', compact('articles'));
@@ -56,6 +57,7 @@ class ArticlesController extends Controller
             return back()->with('flash_message', '글이 저장되지 않았습니다.');
         }
         //
+        $article->tags()->sync($request->input('tags'));
 
         if($request->hasFile('files')){
             $files = $request->file('files');
@@ -71,8 +73,7 @@ class ArticlesController extends Controller
             }
 
 
-            $article->tags()->sync($request->input('tags'));
-             Event(new \App\Events\ArticleCreated($article));
+            Event(new \App\Events\ArticleCreated($article));
              return redirect(route('articles.index'))->with('flash_message','글이 저장되었습니다.');
         }
     }
@@ -86,7 +87,9 @@ class ArticlesController extends Controller
     public function show(\App\Article $article)
     {
         //
-        return view('articles.show', compact('article'));
+        $comments = $article->comments()->with('replies')->whereNull('parent_id')
+            ->latest()->get();
+        return view('articles.show', compact('article','comments'));
     }
 
 
