@@ -31,6 +31,21 @@ class CommentsController extends Controller
     }
 
 
+    public function update(\App\Http\Requests\CommentsRequest $request, \App\Comment $comment)
+    {
+        $comment->update($request->all());
+        return redirect(route('articles.show', $comment->commentable()->id). '#comment_'
+        .$comment->id);
+    }
+
+
+
+    public function destroy(Comment $comment)
+    {
+        $comment->delete();
+        return response()->json([], 204);
+    }
+
 
 
 
