@@ -14,14 +14,10 @@
 
 
 Route::get('/', 'HomeController@index')->name('home');
-/*
-DB::listen(function ($query){
-    dump($query);
-});*/
 
-Route::get('/info',function (){
+/*Route::get('/info',function (){
     return phpinfo();
-});
+});*/
 
 
 Route::get('/mail',function (){
@@ -38,6 +34,9 @@ Route::get('/mail',function (){
 
 Route::resource('articles','ArticlesController');
 
+Route::resource('comments','CommentsController',['only' => ['update','destroy']]);
+
+Route::resource('articles.comments', 'CommentsController', ['only' => ['store']]);
 ////////////////////////////////////////////////////////////////////////////////
 
 

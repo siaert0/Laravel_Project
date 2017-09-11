@@ -20,11 +20,6 @@
         <div class="collapse navbar-collapse" id="app-navbar-collapse">
             <!-- Left Side Of Navbar -->
             <ul class="nav navbar-nav">
-                &nbsp;<li {!! str_contains(request()->path(), 'docs') ? 'class="active"' : '' !!}>
-                    <a href="{{ url('docs') }}">
-                        {{ trans('docs.title') }}
-                    </a>
-                </li>
                 &nbsp;<li {!! str_contains(request()->path(), ['tags', 'articles']) ? 'class="active"' : '' !!}>
                     <a href="{{ route('articles.index') }}">
                         포럼
