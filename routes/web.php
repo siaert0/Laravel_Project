@@ -41,7 +41,6 @@ Route::resource('articles.comments', 'CommentsController', ['only' => ['store']]
 
 
 /* 사용자 가입 */
-
 Route::get('auth/register', [
     'as' => 'users.create',
     'uses' => 'UsersController@create'
@@ -58,7 +57,6 @@ Route::get('auth/confirm/{code}',[
 ])->where('code','[\pL-\pN]{60}');
 
 /* 사용자 인증 */
-
 Route::get('auth/login',[
     'as' => 'sessions.create',
     'uses' => 'SessionsController@create'
@@ -75,7 +73,6 @@ Route::get('auth/logout',[
 ]);
 
 /* 비밀번호 초기화 */
-
 Route::get('auth/remind',[
     'as' => 'remind.create',
     'uses' => 'PasswordsController@getRemind'
@@ -97,7 +94,6 @@ Route::post('auth/reset',[
 ]);
 
 /* Social Login*/
-
 Route::get('social/{provider}',[
     'as' => 'social.login',
     'uses' => 'SocialController@execute',
@@ -105,7 +101,6 @@ Route::get('social/{provider}',[
 
 
 /* 태그 */
-
 Route::get('tags/{slug}/articles',[
     'as' => 'tags.articles.index',
     'uses' => 'ArticlesController@index',

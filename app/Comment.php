@@ -8,7 +8,7 @@ class Comment extends Model
 {
     //
     protected $fillable = ['commentable_type', 'commentable_id','user_id','parent_id','content'];
-    protected $with = ['user','votes'];
+    protected $with = ['user'];
 
 
     public function user()
@@ -31,9 +31,6 @@ class Comment extends Model
         return $this->belongsTo(Comment::class, 'parent_id', 'id');
     }
 
-    public function votes(){
-        return $this->hasMany(Vote::class);
-    }
 
 
 }
