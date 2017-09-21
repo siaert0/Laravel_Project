@@ -1,11 +1,8 @@
 <p align="center"><img src="https://laravel.com/assets/img/components/logo-laravel.svg"></p>
 
 
-</p>
 # <개인 프로젝트>
 
-
-## 1.게시판
 #### 개발환경
 * WAMP(Bitnami 7.1.7-0)
 * PHPStorm
